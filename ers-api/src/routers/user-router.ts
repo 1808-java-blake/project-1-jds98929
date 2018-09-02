@@ -21,24 +21,6 @@ userRouter.get('', [
   }
 }]);
 
-/**
- * Find user by id
- */
-userRouter.get('/:id',[
-  authMiddleware(2), async (req, resp) => {
-  const id = +req.params.id; // convert the id to a number
-  console.log(`retreiving user with id  ${id}`)
-  try {
-    let user = await userDao.findById(id);
-    if (user !== undefined) {
-      resp.json(user);
-    } else {
-      resp.sendStatus(400);
-    }
-  } catch (err) {
-    resp.sendStatus(500);
-  }
-}]);
 
 /**
  * Add a new user
@@ -73,3 +55,4 @@ userRouter.post('/login', async (req, resp) => {
     resp.sendStatus(500);
   }
 })
+

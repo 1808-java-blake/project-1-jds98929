@@ -24,7 +24,7 @@ function login(event) {
       throw 'Failed to login';
     })
     .then(resp => {
-      localStorage.setItem('user', JSON.stringify(resp))
+      localStorage.setItem('user', JSON.stringify(resp));
       if (parseInt(JSON.parse(JSON.stringify(resp)).roleId) === 2) {
         window.location = 'http://localhost:9001/manager-home/manager-home.html';
      } else if (parseInt(JSON.parse(JSON.stringify(resp)).roleId) === 1) {

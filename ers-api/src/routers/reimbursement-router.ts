@@ -7,15 +7,18 @@ import { authMiddleware } from '../security/authorization-middleware';
 export const reimbursementRouter = express.Router(); // routers represent a subset of routes for the express application
 
 /**
- * Find all reimbursements
+ * Find all reimbursements by author Id
  */
-reimbursementRouter.post('/all', [
+reimbursementRouter.get('/all/:id', [
   authMiddleware(1, 2), 
   async (req: Request, resp: Response) => {
     try {
+      const id = +req.params.id;
       console.log('retrieving all reimbursements');
-      let reimbursements = await reimbursementDao.findAll(req.body.reimb_author);
-      resp.json(reimbursements);
+      let reimbursements = await reimbursementDao.findAll(id);
+      if (reimbursements !== undefined) {
+        resp.json(reimbursements);
+      }
     } catch (err) {
       resp.sendStatus(500);
     }
@@ -27,7 +30,6 @@ reimbursementRouter.post('/all', [
 reimbursementRouter.get('/:id', [
   authMiddleware(1, 2), async (req, resp) => {
   const id = +req.params.id; // convert the id to a number
-  console.log(`retreiving movie with id  ${id}`)
   try {
     let reimbursement = await reimbursementDao.findById(id);
     if (reimbursement !== undefined) {
@@ -47,11 +49,10 @@ reimbursementRouter.get('/:id', [
 reimbursementRouter.get('/pending/:id', [
   authMiddleware(1, 2), async (req, resp) => {
   const id = +req.params.id; // convert the id to a number
-  console.log(`retreiving pending reimbursements`)
-  try {0
-    let reimbursement = await reimbursementDao.findPending(id);
-    if (reimbursement !== undefined) {
-      resp.json(reimbursement);
+  try {
+    let reimbursements = await reimbursementDao.findPending(id);
+    if (reimbursements !== undefined) {
+      resp.json(reimbursements);
     } else {
       resp.sendStatus(400);
     }
@@ -67,7 +68,6 @@ reimbursementRouter.get('/pending/:id', [
 reimbursementRouter.get('/approved/:id', [
   authMiddleware(1, 2), async (req, resp) => {
   const id = +req.params.id; // convert the id to a number
-  console.log(`retreiving movie with id  ${id}`)
   try {
     let reimbursement = await reimbursementDao.findApproved(id);
     if (reimbursement !== undefined) {
@@ -87,9 +87,8 @@ reimbursementRouter.get('/approved/:id', [
 reimbursementRouter.get('/denied/:id', [
   authMiddleware(1, 2), async (req, resp) => {
   const id = +req.params.id; // convert the id to a number
-  console.log(`retreiving movie with id  ${id}`)
   try {
-    let reimbursement = await reimbursementDao.findDenied(id);
+    const reimbursement = await reimbursementDao.findDenied(id);
     if (reimbursement !== undefined) {
       resp.json(reimbursement);
     } else {
@@ -125,11 +124,46 @@ reimbursementRouter.put('/:id',[
   async (req, resp) => {
     try {
       const id = await reimbursementDao.updateReimbursement(req.body);
-      resp.status(201);
-      resp.json(id);
+      if (id !== undefined) {
+        resp.json(id);
+      }
     } catch (err) {
       console.log(err);
       resp.sendStatus(500);
     }
   }])
 
+  /**
+ * Find reimbursements by name and status id
+ */
+reimbursementRouter.post('/name',[
+  authMiddleware(2),
+  async (req, resp) => {
+    try {
+      console.log(req.body.firstName, req.body.lastName, req.body.statusId);
+      const reimbursements = await reimbursementDao.findByName(req.body.firstName, req.body.lastName, req.body.statusId);
+      if (reimbursements !== undefined) {
+        resp.json(reimbursements);
+      }
+    } catch (err) {
+      console.log(err);
+      resp.sendStatus(500);
+    }
+  }])
+
+   /**
+ * Find all reimbursements by name
+ */
+reimbursementRouter.post('/name-all',[
+  authMiddleware(2),
+  async (req, resp) => {
+    try {
+      const reimbursements = await reimbursementDao.findAllByName(req.body.firstName, req.body.lastName);
+      if (reimbursements !== undefined) {
+        resp.json(reimbursements);
+      }
+    } catch (err) {
+      console.log(err);
+      resp.sendStatus(500);
+    }
+  }])

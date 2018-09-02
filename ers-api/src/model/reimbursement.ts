@@ -5,13 +5,13 @@ export class Reimbursement {
   resolved = '';
   description = '';
   receipt = {};
-  author = 0;
+  author = '';
   resolver = 0;
   status = '';
   type = '';
 
   constructor(id?: number, amount?: number, submitted?: string, resolved?: string, 
-    description?: string, receipt?: object, author?: number, resolver?: number, status?: string, type?: string) {
+    description?: string, receipt?: object, author?: string, resolver?: number, status?: string, type?: string) {
     id && (this.id = id);
     amount && (this.amount = amount);
     submitted && (this.submitted = submitted);

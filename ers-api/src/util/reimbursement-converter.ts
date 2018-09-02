@@ -1,10 +1,11 @@
 import { SqlReimbursement } from "../dto/sql_reimbursement";
 import { Reimbursement } from "../model/Reimbursement";
+import { SqlUser } from "../dto/sql_user";
 
 /**
- * This is used to convert a sql movie into an actual movie
+ * This is used to convert a sql reimbursement into an actual reimbursement
  */
-export function reimbursementConverter(reimbursement: SqlReimbursement) {
+export function reimbursementConverter(reimbursement: SqlReimbursement, user: SqlUser) {
   let status = '';
   let type = '';
 
@@ -36,6 +37,6 @@ export function reimbursementConverter(reimbursement: SqlReimbursement) {
   }
 
   return new Reimbursement(reimbursement.reimb_id, reimbursement.reimb_amount, reimbursement.reimb_submitted, reimbursement.reimb_resolved,
-    reimbursement.reimb_description, reimbursement.reimb_receipt, reimbursement.reimb_author, reimbursement.reimb_resolver,
+    reimbursement.reimb_description, reimbursement.reimb_receipt, `${user.user_first_name} ${user.user_last_name}`, reimbursement.reimb_resolver,
     status, type);
 }
