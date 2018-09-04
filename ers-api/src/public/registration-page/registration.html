@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Employee Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" media="screen" href="registration.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous">
+</head>
+
+<body>
+  <div align="center">
+    <form class="form-sign-in col-xs-12 col-sm-10 col-md-8 col-lg-6" onsubmit="registerEmployee(event)">
+      <br>
+      <h1 class="h3 mb-3 font-weight-normal row justify-content-center">Enter Info</h1>
+      <br>
+      <label for="input-username" class="sr-only"></label>
+      <input type="text" id="input-username" class="form-control" placeholder="Username" required autofocus>
+      <br>
+      <label for="input-password" class="sr-only"></label>
+      <input type="text" id="input-password" class="form-control" placeholder="Password" required autofocus>
+      <br>
+      <label for="input-first-name" class="sr-only"></label>
+      <input type="text" id="input-first-name" class="form-control" placeholder="First Name" required autofocus>
+      <br>
+      <label for="input-last-name" class="sr-only"></label>
+      <input type="text" id="input-last-name" class="form-control" placeholder="Last Name" required autofocus>
+      <br>
+      <label for="input-email" class="sr-only"></label>
+      <input type="text" id="input-email" class="form-control" placeholder="E-mail" required autofocus>
+      <br>
+      <button class="btn btn-lg btn-primary btn-block submit-button" type="submit">Submit</button>
+    </form>
+  </div>
+</body>
+
+  <!-- CDNs To Libraries-->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+  <!-- My Scripts -->
+  <script src="registration.js"></script>
+</body>
+
+</html>

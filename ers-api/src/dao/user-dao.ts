@@ -1,6 +1,7 @@
 import { connectionPool } from "../util/connection-util";
 import { Reimbursement } from "../model/Reimbursement";
 import { User } from "../model/user";
+import { SqlUser } from "../dto/sql_user"
 import { reimbursementConverter } from "../util/reimbursement-converter";
 import { userConverter } from "../util/user-converter";
 
@@ -77,16 +78,16 @@ export async function findByUsernameAndPassword(username: string, password: stri
  * Add a new user to the DB
  * @param user 
  */
-export async function create(user: User): Promise<number> {
+export async function create(user: SqlUser): Promise<number> {
   const client = await connectionPool.connect();
   try {
     const resp = await client.query(
       `INSERT INTO ers.ers_users
         (ers_username, ers_password, user_first_name, user_last_name, user_email, user_role_id)
-        VALUES ($1, $2, $3, $4, $5, $6) 
+        VALUES ($1, $2, $3, $4, $5, 1) 
         RETURNING ers_users_id`, 
-        [user.username, user.password ,
-        user.firstName, user.lastName, user.email, user.roleId]);
+        [user.ers_username, user.ers_password ,
+        user.user_first_name, user.user_last_name, user.user_email]);
     return resp.rows[0].ers_user_id;
   } finally {
     client.release();

@@ -35,3 +35,7 @@ function login(event) {
       console.log(err);
     });
 }
+
+function register(event){
+  window.location='http://localhost:9001/registration-page/registration.html';
+}

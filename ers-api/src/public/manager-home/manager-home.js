@@ -122,7 +122,7 @@ function manageID(e) {
     }).then(resp => {
       if (resp.status === 401) {
         alert('Unauthenticated: session expired');
-      }if (resp.status === 200) {
+      }else if (resp.status === 200) {
         return resp.json();
       } else {
         alert('Failed to retrieve reimbursements');

@@ -7,19 +7,25 @@ let resolveButtons, resolver;
 if(!reimbursements[0]){
   if (reimbursements.status === 'Pending') {
     resolveButtons = `<th scope="col">
-    <button id="Approve" onclick="resolve(event)" value="${reimbursements[i].id}"
+    <button id="Approve" onclick="resolve(event)" value="${reimbursements.id}"
     class="btn btn-primary btn-block submit-button">
     Approve</button></th>
     <th scope="col">
-    <button id="Deny" onclick="resolve(event)" value="${reimbursements[i].id}" 
+    <button id="Deny" onclick="resolve(event)" value="${reimbursements.id}" 
     class="btn btn-primary btn-block submit-button">
     Deny</button></th>
     </tr>`;
   } else {
     resolveButtons = '</tr>'
   }
-  body.innerHTML += 
-  ` <tr>
+  if (reimbursements.resolver == 0) {
+    resolver = '';
+  } else {
+    resolver = reimbursements.resolver;
+  }
+  if (reimbursements.id) {
+    body.innerHTML += 
+    ` <tr>
     <th scope="col">${reimbursements.id}</th>
     <th scope="col">${reimbursements.amount}</th>
     <th scope="col">${reimbursements.submitted}</th>
@@ -30,9 +36,10 @@ if(!reimbursements[0]){
     <th scope="col">${reimbursements.status}</th>
     <th scope="col">${reimbursements.type}</th>
     ${resolveButtons}`
-}
+  }
+} else{
 
-for(let i = 0; i < reimbursements.length; i++){
+  for(let i = 0; i < reimbursements.length; i++){
     if (reimbursements[i].resolver == 0) {
       resolver = '';
     } else {
@@ -51,8 +58,9 @@ for(let i = 0; i < reimbursements.length; i++){
     } else {
         resolveButtons = '</tr>'
     }
-    body.innerHTML += 
-    ` <tr>
+    if (reimbursements[i].id !== 0){
+      body.innerHTML += 
+      ` <tr>
         <th scope="col">${reimbursements[i].id}</th>
         <th scope="col">${reimbursements[i].amount}</th>
         <th scope="col">${reimbursements[i].submitted}</th>
@@ -63,6 +71,8 @@ for(let i = 0; i < reimbursements.length; i++){
         <th scope="col">${reimbursements[i].status}</th>
         <th scope="col">${reimbursements[i].type}</th>
         ${resolveButtons}`
+    }
+  }
 }
 
 function resolve(e){
@@ -94,7 +104,7 @@ function resolve(e){
     }).then(resp => {
       if (resp.status === 401) {
         alert('Unauthenticated: session expired');
-      }if (resp.status === 200) {
+      }else if (resp.status === 200) {
         return resp.json();
       } else {
         alert('Failed to retrieve reimbursements');

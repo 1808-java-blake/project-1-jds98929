@@ -19,7 +19,6 @@ for(let i = 0; i < employees.length; i++){
             <th scope="col">${employees[i].firstName}</th>
             <th scope="col">${employees[i].lastName}</th>
             <th scope="col">${employees[i].email}</th>
-            <th scope="col">${employees[i].roleId}</th>
             <th scope="col">${viewButton}</th>
         </tr>`
     }
@@ -37,7 +36,7 @@ function view(e){
     }).then(resp => {
       if (resp.status === 401) {
         alert('Unauthenticated: session expired');
-      }if (resp.status === 200) {
+      }else if (resp.status === 200) {
         return resp.json();
       } else {
         alert('Failed to retrieve reimbursements');

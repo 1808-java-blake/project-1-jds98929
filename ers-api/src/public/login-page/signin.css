@@ -52,3 +52,12 @@ body {
 #error-message {
   color: red;
 }
+
+#wrapper {
+  text-align: center;
+}
+
+#reg-btn {
+  max-width: 8em;
+  margin: auto;
+}

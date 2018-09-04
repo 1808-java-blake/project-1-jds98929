@@ -138,7 +138,8 @@ export async function findPending(authorId: number): Promise<Reimbursement[]> {
 export async function findApproved(authorId: number): Promise<Reimbursement[]> {
   const client = await connectionPool.connect();
   try {
-    const resp = await client.query(`SELECT * FROM ers.ers_reimbursement r 
+    const resp = await client.query(`SELECT * FROM ers.ers_users u
+    LEFT JOIN ers.ers_reimbursement r ON u.ers_users_id = r.reimb_author 
     LEFT JOIN ers.ers_reimbursement_status rs USING(reimb_status_id) 
     LEFT JOIN ers.ers_reimbursement_type rt USING(reimb_type_id) 
     WHERE r.reimb_status_id = 2 AND r.reimb_author = $1
@@ -161,7 +162,8 @@ export async function findApproved(authorId: number): Promise<Reimbursement[]> {
 export async function findDenied(authorId: number): Promise<Reimbursement[]> {
   const client = await connectionPool.connect();
   try {
-    const resp = await client.query(`SELECT * FROM ers.ers_reimbursement r 
+    const resp = await client.query(`SELECT * FROM ers.ers_users u
+    LEFT JOIN ers.ers_reimbursement r ON u.ers_users_id = r.reimb_author 
     LEFT JOIN ers.ers_reimbursement_status rs USING(reimb_status_id) 
     LEFT JOIN ers.ers_reimbursement_type rt USING(reimb_type_id) 
     WHERE r.reimb_status_id = 3 AND r.reimb_author = $1
@@ -189,7 +191,7 @@ export async function createReimbursement(reimbursement: SqlReimbursement): Prom
         (reimb_amount, reimb_description, 
           reimb_author, reimb_status_id, reimb_type_id)
         VALUES ($1, $2, $3, $4, $5)
-        RETURNING r.reimb_id`, [reimbursement.reimb_amount, reimbursement.reimb_description, 
+        RETURNING reimb_id`, [reimbursement.reimb_amount, reimbursement.reimb_description, 
           reimbursement.reimb_author, reimbursement.reimb_status_id, reimbursement.reimb_type_id]);
     return resp.rows[0].reimb_id;
   } finally {
@@ -204,7 +206,7 @@ export async function updateReimbursement(reimbursement: SqlReimbursement): Prom
       `UPDATE ers.ers_reimbursement 
         SET reimb_resolver = $1, reimb_status_id = $2
         WHERE reimb_id = $3
-        RETURNING r.reimb_id`, 
+        RETURNING reimb_id`, 
         [reimbursement.reimb_resolver, reimbursement.reimb_status_id, reimbursement.reimb_id]);
     return resp.rows[0].reimb_id;
   } finally {
