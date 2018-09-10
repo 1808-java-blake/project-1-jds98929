@@ -49,7 +49,6 @@ function manageEmployee(e) {
   const statusId = document.getElementById('r_scope').value;
   const firstName = document.getElementById('input-first-name').value;
   const lastName = document.getElementById('input-last-name').value;
-
   if (statusId !== '0'){
     const parameters = {statusId, firstName, lastName}
     fetch(`http://localhost:9001/reimbursement/name`, {

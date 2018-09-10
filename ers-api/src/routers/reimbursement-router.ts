@@ -3,8 +3,43 @@ import express from 'express';
 import * as reimbursementDao from '../dao/reimbursement-dao';
 import { authMiddleware } from '../security/authorization-middleware';
 
-// all routes defined with this object will imply /reimbursement
-export const reimbursementRouter = express.Router(); // routers represent a subset of routes for the express application
+
+export const reimbursementRouter = express.Router(); 
+
+/**
+ * Find all reimbursements 
+ */
+reimbursementRouter.get('', [
+  authMiddleware(1, 2), 
+  async (req: Request, resp: Response) => {
+    try {
+      console.log('retrieving all reimbursements');
+      let reimbursements = await reimbursementDao.find();
+      if (reimbursements !== undefined) {
+        resp.json(reimbursements);
+      }
+    } catch (err) {
+      resp.sendStatus(500);
+    }
+  }]);
+
+/**
+ * Find all reimbursements by status
+ */
+reimbursementRouter.get('/status/:id', [
+  authMiddleware(1, 2), 
+  async (req: Request, resp: Response) => {
+    try {
+      const statusId = +req.params.id;
+      console.log('retrieving all reimbursements');
+      let reimbursements = await reimbursementDao.findByStatus(statusId);
+      if (reimbursements !== undefined) {
+        resp.json(reimbursements);
+      }
+    } catch (err) {
+      resp.sendStatus(500);
+    }
+  }]);
 
 /**
  * Find all reimbursements by author Id
@@ -44,7 +79,7 @@ reimbursementRouter.get('/:id', [
 }]);
 
 /**
- * Find pending by user
+ * Find pending reimbursements by user
  */
 reimbursementRouter.get('/pending/:id', [
   authMiddleware(1, 2), async (req, resp) => {
@@ -63,7 +98,7 @@ reimbursementRouter.get('/pending/:id', [
 }]);
 
 /**
- * Find approved by user
+ * Find approved reimbursements by user
  */
 reimbursementRouter.get('/approved/:id', [
   authMiddleware(1, 2), async (req, resp) => {
@@ -82,7 +117,7 @@ reimbursementRouter.get('/approved/:id', [
 }]);
 
 /**
- * Find denied by user
+ * Find denied reimbursements by user
  */
 reimbursementRouter.get('/denied/:id', [
   authMiddleware(1, 2), async (req, resp) => {
@@ -119,7 +154,7 @@ reimbursementRouter.post('', [
   /**
  * Update reimbursement
  */
-reimbursementRouter.put('/:id',[
+reimbursementRouter.post('/:id',[
   authMiddleware(2),
   async (req, resp) => {
     try {
@@ -140,7 +175,6 @@ reimbursementRouter.post('/name',[
   authMiddleware(2),
   async (req, resp) => {
     try {
-      console.log(req.body.firstName, req.body.lastName, req.body.statusId);
       const reimbursements = await reimbursementDao.findByName(req.body.firstName, req.body.lastName, req.body.statusId);
       if (reimbursements !== undefined) {
         resp.json(reimbursements);

@@ -10,7 +10,7 @@ import { userRouter } from './routers/user-router';
 const app = express();
 
 // set the port
-const port = process.env.PORT || 9001; // will use port from computers environment variables or 3000 if there is none
+const port = process.env.PORT || 9001; // will use port from computers environment variables or 9001s if there is none
 app.set('port', port);
 
 const sess = {
@@ -43,7 +43,7 @@ app.use(
 app.use(bodyParser.json());
 
 app.use((req, resp, next) => {
-  resp.header("Access-Control-Allow-Origin", "http://localhost:9001");
+  resp.header("Access-Control-Allow-Origin", "http://localhost:3000");
   resp.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   resp.header("Access-Control-Allow-Credentials", "true");
   next();

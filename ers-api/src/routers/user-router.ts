@@ -3,8 +3,8 @@ import express from 'express';
 import * as userDao from '../dao/user-dao';
 import { authMiddleware } from '../security/authorization-middleware';
 
-// all routes defiend with this object will imply /movies
-export const userRouter = express.Router(); // routers represent a subset of routes for the express application
+
+export const userRouter = express.Router(); 
 
 /**
  * Find all users
@@ -37,11 +37,12 @@ userRouter.post('', async (req, resp) => {
   }
 })
 
-
+/**
+ * User sign in
+ */
 userRouter.post('/login', async (req, resp) => {
 
   try {
-    console.log('got here');
     const user = await userDao.findByUsernameAndPassword(req.body.username, req.body.password);
 
     if (user) {

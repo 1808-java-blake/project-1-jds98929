@@ -6,6 +6,53 @@ import { User } from "../model/user";
 import { userConverter } from "../util/user-converter";
 
 /**
+ * Retreive all reimbursements
+ */
+export async function find(): Promise<Reimbursement[]> {
+  const client = await connectionPool.connect();
+  try {
+    const resp = await client.query(`SELECT * FROM ers.ers_users u 
+    LEFT JOIN ers.ers_reimbursement r ON u.ers_users_id = r.reimb_author
+    LEFT JOIN ers.ers_reimbursement_status rs USING(reimb_status_id) 
+    LEFT JOIN ers.ers_reimbursement_type rt USING(reimb_type_id)
+    WHERE r.reimb_id <> 0
+    ORDER BY r.reimb_id`);
+    const reimbursements=[];
+    resp.rows.forEach((user_reimbursement_result) => {
+      const reimbursement = reimbursementConverter(user_reimbursement_result, user_reimbursement_result);
+      reimbursements.push(reimbursement);
+    });
+    return reimbursements;
+  } finally {
+    client.release();
+  }
+}
+
+/**
+ * Retreive all reimbursements by status
+ * @param statusId
+ */
+export async function findByStatus(statusId: number): Promise<Reimbursement[]> {
+  const client = await connectionPool.connect();
+  try {
+    const resp = await client.query(`SELECT * FROM ers.ers_users u 
+    LEFT JOIN ers.ers_reimbursement r ON u.ers_users_id = r.reimb_author
+    LEFT JOIN ers.ers_reimbursement_status rs USING(reimb_status_id) 
+    LEFT JOIN ers.ers_reimbursement_type rt USING(reimb_type_id)
+    WHERE r.reimb_status_id = $1
+    ORDER BY r.reimb_id`, [statusId]);
+    const reimbursements=[];
+    resp.rows.forEach((user_reimbursement_result) => {
+      const reimbursement = reimbursementConverter(user_reimbursement_result, user_reimbursement_result);
+      reimbursements.push(reimbursement);
+    });
+    return reimbursements;
+  } finally {
+    client.release();
+  }
+}
+
+/**
  * Retreive all of a user's reimbursements from the database
  * @param authorId
  */
@@ -31,7 +78,7 @@ export async function findAll(authorId: number): Promise<Reimbursement[]> {
 }
 
 /**
- * Retreive reimbursements by author name
+ * Retreive reimbursements by author name and status
  * @param firstName
  * @param lastName
  * @param statusId
@@ -85,7 +132,7 @@ export async function findAllByName(firstName: string, lastName: string): Promis
 
 /**
  * Retreive a reimbursement by its id
- * @param id 
+ * @param reimbursementId 
  */
 export async function findById(reimbursementId: number): Promise<Reimbursement> {
   const client = await connectionPool.connect();
@@ -198,7 +245,10 @@ export async function createReimbursement(reimbursement: SqlReimbursement): Prom
     client.release();
   }
 }
-
+/**
+ * Update a reimbursement
+ * @param reimbursement 
+ */
 export async function updateReimbursement(reimbursement: SqlReimbursement): Promise<number> {
   const client = await connectionPool.connect();
   try {

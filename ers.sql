@@ -1,42 +1,108 @@
-﻿SET SCHEMA 'ers';
+﻿CREATE TABLE ers.ers_reimbursement
+(
+  reimb_id serial NOT NULL,
+  reimb_amount numeric(6,2),
+  reimb_submitted timestamp without time zone DEFAULT now(),
+  reimb_resolved timestamp without time zone,
+  reimb_description character varying(250),
+  reimb_receipt bytea,
+  reimb_author integer,
+  reimb_resolver integer,
+  reimb_status_id integer,
+  reimb_type_id integer,
+  CONSTRAINT ers_reimbursement_pkey PRIMARY KEY (reimb_id),
+  CONSTRAINT ers_reimbursement_reimb_author_fkey FOREIGN KEY (reimb_author)
+      REFERENCES ers.ers_users (ers_users_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT ers_reimbursement_reimb_resolver_fkey FOREIGN KEY (reimb_resolver)
+      REFERENCES ers.ers_users (ers_users_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT ers_reimbursement_reimb_status_id_fkey FOREIGN KEY (reimb_status_id)
+      REFERENCES ers.ers_reimbursement_status (reimb_status_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT ers_reimbursement_reimb_type_id_fkey FOREIGN KEY (reimb_type_id)
+      REFERENCES ers.ers_reimbursement_type (reimb_type_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE ers.ers_reimbursement
+  OWNER TO postgres;
 
--- CREATE TABLE ers_reimbursement_type
--- (
---   reimb_type_id SERIAL PRIMARY KEY,
---   reimb_type VARCHAR(10)
--- );
--- 
--- CREATE TABLE ers_reimbursement
--- (
---   reimb_id SERIAL PRIMARY KEY,
---   reimb_amount NUMERIC(6,2),
---   reimb_submitted TIMESTAMP DEFAULT now(),
---   reimb_resolved TIMESTAMP,
---   reimb_description VARCHAR(250),
---   reimb_receipt BYTEA,
---   reimb_author INTEGER REFERENCES ers_users(ers_users_id),
---   reimb_resolver INTEGER REFERENCES ers_users(ers_users_id),
---   reimb_status_id INTEGER REFERENCES ers_reimbursement_status(reimb_status_id),
---   reimb_type_id INTEGER REFERENCES ers_reimbursement_type(reimb_type_id)
--- );
+-- Trigger: update_reimbursement_trigger on ers.ers_reimbursement
 
-CREATE OR REPLACE FUNCTION update_reimbursement_trig()
-RETURNS TRIGGER AS $$
+-- DROP TRIGGER update_reimbursement_trigger ON ers.ers_reimbursement;
+
+CREATE TRIGGER update_reimbursement_trigger
+  BEFORE UPDATE
+  ON ers.ers_reimbursement
+  FOR EACH ROW
+  EXECUTE PROCEDURE ers.update_reimbursement_trig();
+
+CREATE TABLE ers.ers_reimbursement_status
+(
+  reimb_status_id serial NOT NULL,
+  reimb_status character varying(10),
+  CONSTRAINT ers_reimbursement_status_pkey PRIMARY KEY (reimb_status_id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE ers.ers_reimbursement_status
+  OWNER TO postgres;
+
+CREATE TABLE ers.ers_reimbursement_type
+(
+  reimb_type_id serial NOT NULL,
+  reimb_type character varying(10),
+  CONSTRAINT ers_reimbursement_type_pkey PRIMARY KEY (reimb_type_id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE ers.ers_reimbursement_type
+  OWNER TO postgres;
+
+CREATE TABLE ers.ers_user_roles
+(
+  ers_user_role_id serial NOT NULL,
+  user_role character varying(10),
+  CONSTRAINT ers_user_roles_pkey PRIMARY KEY (ers_user_role_id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE ers.ers_user_roles
+  OWNER TO postgres;
+
+CREATE TABLE ers.ers_users
+(
+
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE ers.ers_users
+  OWNER TO postgres;
+
+CREATE OR REPLACE FUNCTION ers.update_reimbursement_trig()
+  RETURNS trigger AS
+$BODY$
 BEGIN
-    IF(TG_OP = 'UPDATING') THEN
-	UPDATE ers_reimbursement
-	SET reimb_resolved = now()
-	WHERE NEW.reimb_status_id <> OLD.reimb_status_id;
+
+    IF NEW.reimb_status_id = 2 OR NEW.reimb_status_id = 3 THEN
+    
+	NEW.reimb_resolved = now();
+	
     END IF;
     RETURN NEW; 
 END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER update_reimbursement_trigger
-AFTER UPDATE ON ers_reimbursement
-FOR EACH ROW
-EXECUTE PROCEDURE update_reimbursement_trig();
-
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION ers.update_reimbursement_trig()
+  OWNER TO postgres;
 
 
 -- INSERT INTO ers_reimbursement_status (reimb_status)

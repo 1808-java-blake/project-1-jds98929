@@ -6,8 +6,18 @@ import { SqlUser } from "../dto/sql_user";
  * This is used to convert a sql reimbursement into an actual reimbursement
  */
 export function reimbursementConverter(reimbursement: SqlReimbursement, user: SqlUser) {
-  let status = '';
-  let type = '';
+  let status: string = '';
+  let type: string = '';
+  let submitted = '';
+  let resolved = '';
+
+  const submittedDate: Date = new Date(reimbursement.reimb_submitted);
+  submitted = submittedDate.toLocaleString('en-US');
+  
+  if (reimbursement.reimb_resolved) {
+    const resolvedDate: Date = new Date(reimbursement.reimb_resolved);
+    resolved = resolvedDate.toLocaleString('en-US');
+  }
 
   switch (reimbursement.reimb_status_id){
     case 1: 
@@ -36,7 +46,7 @@ export function reimbursementConverter(reimbursement: SqlReimbursement, user: Sq
       break;
   }
 
-  return new Reimbursement(reimbursement.reimb_id, reimbursement.reimb_amount, reimbursement.reimb_submitted, reimbursement.reimb_resolved,
+  return new Reimbursement(reimbursement.reimb_id, reimbursement.reimb_amount, submitted, resolved,
     reimbursement.reimb_description, reimbursement.reimb_receipt, `${user.user_first_name} ${user.user_last_name}`, reimbursement.reimb_resolver,
     status, type);
 }
